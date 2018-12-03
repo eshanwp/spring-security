@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans
+        xmlns="http://www.springframework.org/schema/security"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security-4.0.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/security ">
+
+    <!--Enable the New Authentication Provider-->
+    <authentication-manager>
+        <authentication-provider user-service-ref="userDetailsService" />
+    </authentication-manager>
+
+    <beans:bean id="userDetailsService"
+                class="com.boot.security.service.MyUserDetailsService"/>
+
+    <!--/Enable the New Authentication Provider-->
+
+    <http use-expressions="true">
+        <intercept-url pattern="/login*" access="isAnonymous()" />
+        <intercept-url pattern="/**" access="isAuthenticated()"/>
+
+        <form-login login-page='/login.html'
+                    default-target-url="/homepage.html"
+                    authentication-failure-url="/login.html?error=true" />
+        <logout logout-success-url="/login.html" />
+    </http>
+
+    <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="user1" password="user1Pass" authorities="ROLE_USER" />
+            </user-service>
+            <password-encoder ref="encoder" />
+        </authentication-provider>
+    </authentication-manager>
+
+    <beans:bean id="encoder"
+                class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+    </beans:bean>
+
+</beans:beans>
